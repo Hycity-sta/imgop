@@ -1,9 +1,9 @@
 package routers
 
 import (
-	"imgop/services"
-
 	"github.com/gin-gonic/gin"
+
+	"imgop/handler"
 )
 
 func noRouterHandle(c *gin.Context) {
@@ -13,8 +13,7 @@ func noRouterHandle(c *gin.Context) {
 func Setup() *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/index", services.GetIndex)
-
+	r.GET("/index", handler.GetIndex)
 	r.NoRoute(noRouterHandle)
 
 	return r

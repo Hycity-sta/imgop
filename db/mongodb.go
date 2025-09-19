@@ -1,4 +1,4 @@
-package configs
+package db
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 )
 
 var MongoDB *mongo.Client
+var Imgop *mongo.Database
 
 func ConnectMongoDB() {
 	opts := options.Client().ApplyURI("mongodb://0.0.0.0:27017")
@@ -19,6 +20,7 @@ func ConnectMongoDB() {
 	}
 
 	MongoDB = client
+	Imgop = MongoDB.Database("imgop")
 
 	log.Println("Monogdb 连接成功")
 
