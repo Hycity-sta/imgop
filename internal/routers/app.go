@@ -17,8 +17,8 @@ func Setup() *gin.Engine {
 
 	auth_ := r.Group("/auth")
 	{
-		auth_.GET("/login", handler.Login)
-		auth_.GET("/signup", handler.Signup)
+		auth_.POST("/login", handler.Login)
+		auth_.POST("/signup", handler.Signup)
 	}
 
 	user_ := r.Group("/user")
