@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"imgop/db"
-	"imgop/routers"
+	"imgop/internal/db"
+	"imgop/internal/routers"
 )
 
 func main() {
@@ -13,5 +13,5 @@ func main() {
 
 	router := routers.Setup()
 	router.Run(":8080")
-	fmt.Println("Sever is runnig in 8080")
+	log.Println("Sever is runnig in 8080")
 }
