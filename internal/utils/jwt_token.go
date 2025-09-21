@@ -43,7 +43,7 @@ func GenerateToken(userID uint, username string) (string, error) {
 // ParseToken 解析 JWT Token
 func ParseToken(tokenString string) (*CustomClaims, error) {
 	// 解析 Token
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return SecretKey, nil
 	})
 

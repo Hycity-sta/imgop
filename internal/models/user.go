@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -22,7 +23,7 @@ type User struct {
 }
 
 // 插入一个新的用户
-func InsertUser(user *User) error {
+func InsertUser(user User) error {
 	// 设置时间戳
 	now := time.Now()
 	user.CreatedAt = now
@@ -41,63 +42,109 @@ func InsertUser(user *User) error {
 	return err
 }
 
-// 插入许多用户
-func InsertManyUser(users *[]User) (*mongo.InsertManyResult, error) {
-	coll := db.Imgop.Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	result, err := coll.InsertMany(ctx, users)
-	return result, err
-}
-
 // 通过用户id查找用户
-func FindUserById(id bson.ObjectID) *mongo.SingleResult {
+func FindUserById(id string) *User {
+	id_, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+	}
+
 	coll := db.Imgop.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result := coll.FindOne(ctx, bson.D{{Key: "_id", Value: id}})
+	filter := bson.D{{Key: "_id", Value: id_}}
+	result := coll.FindOne(ctx, filter)
 
-	return result
+	var user User
+	err = result.Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Println(err)
+			return nil
+		} else {
+			log.Println(err)
+		}
+	}
+
+	return &user
 }
 
 // 通过用户名查找用户
-func FindUserByName(name string) (*mongo.Cursor, error) {
+func FindUserByName(name string) []*User {
 	coll := db.Imgop.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result, err := coll.Find(ctx, bson.D{{Key: "name", Value: name}})
-	return result, err
+	filter := bson.D{{Key: "name", Value: name}}
+	cursor, err1 := coll.Find(ctx, filter)
+	if err1 != nil {
+		log.Println(err1)
+	}
+
+	var users []*User
+	err2 := cursor.All(ctx, &users)
+	if err2 != nil {
+		return nil
+	}
+
+	return users
 }
 
 // 查找所有用户
-func FindAllUser() (*mongo.Cursor, error) {
+func FindAllUser() []*User {
 	coll := db.Imgop.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result, err := coll.Find(ctx, bson.D{})
-	return result, err
+	cursor, err1 := coll.Find(ctx, bson.D{})
+	if err1 != nil {
+		return nil
+	}
+
+	var users []*User
+	err2 := cursor.All(ctx, &users)
+	if err2 != nil {
+		return nil
+	}
+
+	return users
 }
 
 // 通过用户id更新用户
-func UpdateUserById(id bson.ObjectID, update any) *mongo.SingleResult {
+func UpdateUserById(id string, update bson.M) error {
+	id_, err1 := bson.ObjectIDFromHex(id)
+	if err1 != nil {
+		return err1
+	}
+
 	coll := db.Imgop.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result := coll.FindOneAndUpdate(ctx, bson.D{{Key: "_id", Value: id}}, update)
-	return result
+	_, err2 := coll.UpdateByID(ctx, bson.D{{Key: "_id", Value: id_}}, update)
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }
 
 // 通过用户id删除用户
-func DeleteUserById(id bson.ObjectID) *mongo.SingleResult {
+func DeleteUserById(id string) error {
+	id_, err1 := bson.ObjectIDFromHex(id)
+	if err1 != nil {
+		return err1
+	}
+
 	coll := db.Imgop.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result := coll.FindOneAndDelete(ctx, bson.D{{Key: "_id", Value: id}})
-	return result
+	_, err2 := coll.DeleteOne(ctx, bson.M{"_id": id_})
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }

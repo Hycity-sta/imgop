@@ -2,8 +2,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-
-	"imgop/internal/handler"
 )
 
 func noRouterHandle(c *gin.Context) {
@@ -17,13 +15,20 @@ func Setup() *gin.Engine {
 
 	auth_ := r.Group("/auth")
 	{
-		auth_.POST("/login", handler.Login)
-		auth_.POST("/signup", handler.Signup)
+		auth_.POST("/login")
+		auth_.POST("/signup")
 	}
 
 	user_ := r.Group("/user")
 	{
-		user_.GET("/GetFriendList")
+		user_.GET("/GetAllFriends")
+		user_.GET("/GetAllGroups")
+		user_.POST("/AddNewFriendById")
+		user_.POST("/JoinNewGroupById")
+		user_.GET("/FindFriendByName")
+		user_.GET("/FindGroupByName")
+		user_.POST("/DeleteFriendById")
+		user_.POST("/DeleteGroupById")
 	}
 
 	chat_ := r.Group("/chat")
