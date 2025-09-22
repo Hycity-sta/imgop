@@ -91,6 +91,29 @@ func FindUserByName(name string) []*User {
 	return users
 }
 
+// 通过邮件来查找用户
+func FindUserByEmail(email string) *User {
+	coll := db.Imgop.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	filter := bson.D{{Key: "email", Value: email}}
+	result := coll.FindOne(ctx, filter)
+
+	var user User
+	err := result.Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Println(err)
+			return nil
+		} else {
+			log.Println(err)
+		}
+	}
+
+	return &user
+}
+
 // 查找所有用户
 func FindAllUser() []*User {
 	coll := db.Imgop.Collection("users")

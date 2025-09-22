@@ -10,8 +10,8 @@ import (
 // 自定义 Claims 结构体，包含标准 Claims 和自定义字段
 type CustomClaims struct {
 	jwt.RegisteredClaims
-	UserID   uint   `json:"user_id"`
-	Username string `json:"username"`
+	UserID    string `json:"user_id"`
+	UserEmail string `json:"user_email"`
 }
 
 var (
@@ -20,11 +20,11 @@ var (
 )
 
 // GenerateToken 生成 JWT Token
-func GenerateToken(userID uint, username string) (string, error) {
+func GenerateToken(userID string, user_email string) (string, error) {
 	// 设置 Claims
 	claims := CustomClaims{
-		UserID:   userID,
-		Username: username,
+		UserID:    userID,
+		UserEmail: user_email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // 过期时间
 			IssuedAt:  jwt.NewNumericDate(time.Now()),                     // 签发时间
