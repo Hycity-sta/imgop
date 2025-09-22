@@ -23,6 +23,7 @@ func SetupApiRouters(r *gin.Engine) {
 
 	public.POST("/login", services.Login)
 	public.POST("/signup", services.Signup)
+	public.POST("/jwt-auth", services.JwtAuth)
 
 	private := r.Group("/api")
 	private.Use(middlewares.JWTAuthMiddleware())

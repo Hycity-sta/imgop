@@ -103,5 +103,5 @@ func Login(c *gin.Context) {
 }
 
 func GetAllFriends(c *gin.Context) {
-
+	
 }
