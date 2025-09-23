@@ -16,8 +16,6 @@ type User struct {
 	Name         string        `json:"name" bson:"name"`                   // 用户登录名
 	Email        string        `json:"email" bson:"email"`                 // 用户邮箱（唯一，用于找回密码等）
 	PasswordHash string        `json:"password_hash" bson:"password_hash"` // 加密后的密码（绝对不能存明文）
-	Status       string        `json:"status" bson:"status"`               // 在线状态：online/offline/away
-	LastSeen     time.Time     `json:"last_seen" bson:"last_seen"`         // 最后活动时间（用于判断离线超时）
 	CreatedAt    time.Time     `json:"created_at" bson:"created_at"`       // 账号创建时间
 	UpdatedAt    time.Time     `json:"updated_at" bson:"updated_at"`       // 资料最后更新时间
 }

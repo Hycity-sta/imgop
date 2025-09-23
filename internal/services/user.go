@@ -40,8 +40,6 @@ func Signup(c *gin.Context) {
 		Name:         req.Name,
 		PasswordHash: hash,
 		Email:        req.Email,
-		Status:       "offline",
-		LastSeen:     time.Now(),
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -100,8 +98,4 @@ func Login(c *gin.Context) {
 		"success":  "ok",
 		"username": user.Name,
 	})
-}
-
-func GetAllFriends(c *gin.Context) {
-	
 }
