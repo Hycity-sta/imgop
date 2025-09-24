@@ -253,6 +253,7 @@ func GetAllFriends(c *gin.Context) {
 
 	// 遍历好友列表，提取好友信息，塞入应答字段
 	type FriendInfo struct {
+		Id    string `json:id`
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}
@@ -260,7 +261,7 @@ func GetAllFriends(c *gin.Context) {
 	for _, f_id := range friend_list {
 		f_id_str := f_id.Hex()
 		f := models.FindUserById(f_id_str)
-		friends = append(friends, FriendInfo{f.Name, f.Email})
+		friends = append(friends, FriendInfo{f_id_str, f.Name, f.Email})
 	}
 
 	// 返回成功
