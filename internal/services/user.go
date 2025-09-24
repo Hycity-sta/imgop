@@ -3,7 +3,6 @@ package services
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -12,16 +11,15 @@ import (
 	"imgop/internal/utils"
 )
 
-// 接收前端请求的结构体
-type SignupRequest struct {
-	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 // 注册服务
 func Signup(c *gin.Context) {
-	var req SignupRequest
+	// 接收前端请求的结构体
+	type Req struct {
+		Name     string `json:"name" binding:"required"`
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+	var req Req
 
 	// 绑定 JSON 到结构体
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -40,8 +38,6 @@ func Signup(c *gin.Context) {
 		Name:         req.Name,
 		PasswordHash: hash,
 		Email:        req.Email,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
 	}
 
 	// 数据库插入新的user

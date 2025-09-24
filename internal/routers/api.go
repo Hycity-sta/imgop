@@ -26,11 +26,13 @@ func SetupApiRouters(r *gin.Engine) {
 
 	private := r.Group("/api")
 	private.Use(middlewares.JWTAuthMiddleware())
+
+	private.POST("/add-friend", services.AddFriend)
+	private.GET("/outgoing-friendrequests", services.GetOutgoingFriendRequests)
+	private.GET("/incoming-friendrequests", services.GetIncomingFriendRequests)
+	private.POST("/accept-friendrequests", services.AcceptFriendRequests)
+	private.POST("/reject-friendrequests", services.RejectFriendRequests)
 	private.GET("/friends", services.GetAllFriends)
 	private.POST("/search-friend", services.SearchFriend)
-	private.POST("/add-friend", services.AddFriend)
-	private.POST("/accept-friend", services.AcceptFriend)
-	private.POST("/reject-friend", services.RejectFriend)
-	private.GET("/pending-friends", services.GetAllPendingFriend)
 
 }

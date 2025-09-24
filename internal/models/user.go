@@ -12,21 +12,15 @@ import (
 )
 
 type User struct {
-	ID           bson.ObjectID `json:"id" bson:"_id,omitempty"`            // 用户的唯一标识符（MongoDB自动生成）
-	Name         string        `json:"name" bson:"name"`                   // 用户登录名
-	Email        string        `json:"email" bson:"email"`                 // 用户邮箱（唯一，用于找回密码等）
-	PasswordHash string        `json:"password_hash" bson:"password_hash"` // 加密后的密码（绝对不能存明文）
-	CreatedAt    time.Time     `json:"created_at" bson:"created_at"`       // 账号创建时间
-	UpdatedAt    time.Time     `json:"updated_at" bson:"updated_at"`       // 资料最后更新时间
+	ID           bson.ObjectID    `json:"id" bson:"_id,omitempty"`            // 用户的唯一标识符（MongoDB自动生成）
+	Name         string           `json:"name" bson:"name"`                   // 用户登录名
+	Email        string           `json:"email" bson:"email"`                 // 用户邮箱（唯一，用于找回密码等）
+	PasswordHash string           `json:"password_hash" bson:"password_hash"` // 加密后的密码（绝对不能存明文）
+	FriendList   []*bson.ObjectID `json:"friend_list" bson:"friend_list"`     //好友列表，里面存储好友的id
 }
 
 // 插入一个新的用户
 func InsertUser(user User) error {
-	// 设置时间戳
-	now := time.Now()
-	user.CreatedAt = now
-	user.UpdatedAt = now
-
 	// 确保ID为空时会自动生成
 	if user.ID == bson.NilObjectID {
 		user.ID = bson.NewObjectID()
@@ -130,6 +124,35 @@ func FindAllUser() []*User {
 	}
 
 	return users
+}
+
+// 通过好友id来查找好友是否存在
+func IsFriend(user_id_str string, friend_id_str string) bool {
+	coll := db.Imgop.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	user_id, err1 := bson.ObjectIDFromHex(user_id_str)
+	if err1 != nil {
+		return false
+	}
+
+	friend_id, err2 := bson.ObjectIDFromHex(friend_id_str)
+	if err2 != nil {
+		return false
+	}
+
+	filter := bson.M{"_id": user_id, "friends": friend_id}
+	count, err3 := coll.CountDocuments(ctx, filter)
+	if err3 != nil {
+		return false
+	}
+
+	if count > 0 {
+		return true
+	} else {
+		return false
+	}
 }
 
 // 通过用户id更新用户
