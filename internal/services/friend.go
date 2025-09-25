@@ -53,7 +53,7 @@ func AddFriend(c *gin.Context) {
 	// 数据库查验有没有现存好友关系，有的话就不创建了
 	fs := models.FindFriendRequest(user_id_str, friend_id_str)
 	if fs != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "好友已存在或已申请"})
+		c.JSON(http.StatusOK, gin.H{"success": "ok", "message": "好友已存在或已申请"})
 		return
 	}
 
@@ -253,7 +253,7 @@ func GetAllFriends(c *gin.Context) {
 
 	// 遍历好友列表，提取好友信息，塞入应答字段
 	type FriendInfo struct {
-		Id    string `json:id`
+		Id    string `json:"id"`
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}
@@ -301,6 +301,7 @@ func SearchFriend(c *gin.Context) {
 	// 将好友信息提取出来，然后返回
 	c.JSON(http.StatusOK, gin.H{
 		"success":      "ok",
+		"friend_id":    friend_id_str,
 		"friend_name":  friend.Name,
 		"friend_email": friend.Email,
 	})
