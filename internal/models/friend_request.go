@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -12,6 +13,10 @@ import (
 type FriendRequest struct {
 	FromId bson.ObjectID `json:"from_id" bson:"from_id"`
 	ToId   bson.ObjectID `json:"to_id" bson:"to_id"`
+}
+
+func getFriendRequestCollName() string {
+	return "friend_request_coll"
 }
 
 func InsertNewFriendRequest(fr FriendRequest) error {
@@ -34,22 +39,24 @@ func DeleteFriendRequest(from_id_str string, to_id_str string) error {
 		return err2
 	}
 
-	coll := db.Imgop.Collection("friendship_coll")
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	coll := db.Imgop.Collection("friend_request_coll")
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	filter := bson.M{"from_id": from_id, "to_id": to_id}
-	_, err3 := coll.DeleteOne(ctx, filter)
+	result, err3 := coll.DeleteOne(ctx, filter, nil)
 	if err3 != nil {
 		return err3
 	}
+
+	log.Println("删除数目：", result.DeletedCount)
 
 	return nil
 }
 
 func FindFriendRequest(from_id_str string, to_id_str string) *FriendRequest {
 	// 打开集合
-	coll := db.Imgop.Collection("friendship_coll")
+	coll := db.Imgop.Collection(getFriendRequestCollName())
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -83,7 +90,7 @@ func FindFriendRequest(from_id_str string, to_id_str string) *FriendRequest {
 
 func FindIncomingFriendRequest(user_id_str string) []*FriendRequest {
 	// 打开集合
-	coll := db.Imgop.Collection("friendship_coll")
+	coll := db.Imgop.Collection(getFriendRequestCollName())
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -112,7 +119,7 @@ func FindIncomingFriendRequest(user_id_str string) []*FriendRequest {
 
 func FindOutgoingFriendRequest(user_id_str string) []*FriendRequest {
 	// 打开集合
-	coll := db.Imgop.Collection("friendship_coll")
+	coll := db.Imgop.Collection(getFriendRequestCollName())
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 

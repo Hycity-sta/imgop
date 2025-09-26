@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 
 	"imgop/internal/models"
@@ -38,6 +39,7 @@ func Signup(c *gin.Context) {
 		Name:         req.Name,
 		PasswordHash: hash,
 		Email:        req.Email,
+		FriendList:   []bson.ObjectID{},
 	}
 
 	// 数据库插入新的user

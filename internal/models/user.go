@@ -12,11 +12,11 @@ import (
 )
 
 type User struct {
-	ID           bson.ObjectID    `json:"id" bson:"_id,omitempty"`            // 用户的唯一标识符（MongoDB自动生成）
-	Name         string           `json:"name" bson:"name"`                   // 用户登录名
-	Email        string           `json:"email" bson:"email"`                 // 用户邮箱（唯一，用于找回密码等）
-	PasswordHash string           `json:"password_hash" bson:"password_hash"` // 加密后的密码（绝对不能存明文）
-	FriendList   []*bson.ObjectID `json:"friend_list" bson:"friend_list"`     //好友列表，里面存储好友的id
+	ID           bson.ObjectID   `json:"id" bson:"_id,omitempty"`            // 用户的唯一标识符（MongoDB自动生成）
+	Name         string          `json:"name" bson:"name"`                   // 用户登录名
+	Email        string          `json:"email" bson:"email"`                 // 用户邮箱（唯一，用于找回密码等）
+	PasswordHash string          `json:"password_hash" bson:"password_hash"` // 加密后的密码（绝对不能存明文）
+	FriendList   []bson.ObjectID `json:"friend_list" bson:"friend_list"`     //好友列表，里面存储好友的id
 }
 
 // 插入一个新的用户
@@ -56,6 +56,7 @@ func FindUserById(id string) *User {
 			return nil
 		} else {
 			log.Println(err)
+			return nil
 		}
 	}
 
@@ -166,7 +167,7 @@ func UpdateUserById(id string, update bson.M) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	_, err2 := coll.UpdateByID(ctx, bson.D{{Key: "_id", Value: id_}}, update)
+	_, err2 := coll.UpdateOne(ctx, bson.D{{Key: "_id", Value: id_}}, update)
 	if err2 != nil {
 		return err2
 	}
